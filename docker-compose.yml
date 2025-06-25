@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # FastAPI Application
+  police-sql-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: FastAPI
+    ports:
+      - "8000:8000"  # Expose API only
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=llama3.2:3b
+    depends_on:
+      ollama:
+        condition: service_healthy
+    networks:
+      - police-network
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+
+  # Ollama Service (Internal only)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-service
+    # REMOVE public port mapping unless needed
+    # ports:
+    #   - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - police-network
+    restart: unless-stopped
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+
+  # Optional: Nginx Reverse Proxy
+  
+
+volumes:
+  ollama_data:
+
+networks:
+  police-network:
+    driver: bridge
+
+#docker compose up --build
