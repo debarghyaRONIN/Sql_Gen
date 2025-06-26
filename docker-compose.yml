@@ -47,7 +47,7 @@ services:
       timeout: 10s
       start_period: 60s
 
-  # Optional: Nginx Reverse Proxy
+
   
 
 volumes:
