@@ -163,7 +163,6 @@ POST /chat/conversational
 API/
   sql-api/
     app.py           # Main FastAPI application
-    app2.py          # Gemini-based FastAPI endpoints (alternative)
     requirements.txt # Python dependencies
     README.md        # This documentation
     ...
