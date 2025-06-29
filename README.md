@@ -183,158 +183,98 @@ This project is for demonstration and research purposes. Please check with your 
 
 ```mermaid
 graph TD
-    A[Client Request] --> B{Request Type?}
+    A[Client Request] --> B{Request Type}
     
-    B -->|Schema Inspection| C[schema/inspect]
-    B -->|SQL Generation| D[query/enhanced-sql]
-    B -->|Dataset Operations| E[datasets/*]
-    B -->|Chart Generation| F[charts/generate]
-    B -->|Conversational| G[chat/conversational]
-    B -->|Health Check| H[health]
+    %% Main API Endpoints
+    B --> C[Schema Inspection]
+    B --> D[SQL Generation]
+    B --> E[Dataset Operations]
+    B --> F[Chart Generation]
+    B --> G[Chat Interface]
     
-    %% Schema Inspection Flow
-    C --> I[SchemaInspector]
-    I --> I1[Connect to Oracle DB]
-    I1 --> I2[Get Tables & Metadata]
-    I2 --> I3[Get Foreign Keys]
-    I3 --> I4[Cache Schema Info]
-    I4 --> I5[Return Schema Response]
+    %% Schema Flow
+    C --> C1[Connect to Oracle DB]
+    C1 --> C2[Get Tables & Metadata]
+    C2 --> C3[Return Schema Info]
     
     %% SQL Generation Flow
-    D --> J[SessionManager]
-    J --> J1[Get/Create Session]
-    J1 --> J2[Build Chat History Context]
-    J2 --> K[EnhancedOllamaClient]
-    K --> K1[Load CSV Data]
-    K1 --> K2[Generate Embeddings with SentenceTransformer]
-    K2 --> K3[Store in ChromaDB]
-    K3 --> K4[Query ChromaDB for Context]
-    K4 --> K5[Build Enhanced Prompt with Schema + Context]
-    K5 --> K6[Call Ollama API]
-    K6 --> K7[Clean & Validate SQL]
-    K7 --> K8[Extract Tables & Fields]
-    K8 --> L{Execute Query?}
+    D --> D1[Session Manager]
+    D1 --> D2[Enhanced Ollama Client]
+    D2 --> D3[Generate SQL with RAG]
+    D3 --> D4{Execute Query?}
+    D4 -->|Yes| D5[Database Executor]
+    D4 -->|No| D6[Return SQL Only]
+    D5 --> D7[Return Results]
     
-    L -->|Yes| M[DatabaseExecutor]
-    L -->|No| N[Return SQL Only]
+    %% Dataset Operations
+    E --> E1[Create/Get/Delete Dataset]
+    E1 --> E2[Save to Session]
     
-    M --> M1[Execute Oracle SQL]
-    M1 --> M2[Add ROWNUM Limit for Safety]
-    M2 --> M3[Return Results as DataFrame]
-    M3 --> O[GraphAgent]
-    O --> O1[Suggest Chart Type]
-    O1 --> P[Update Session History]
-    P --> Q[Return Enhanced SQL Response]
+    %% Chart Generation
+    F --> F1[Get Dataset]
+    F1 --> F2[Analyze Data Types]
+    F2 --> F3[Generate Chart Config]
     
-    %% Dataset Operations Flow
-    E --> R{Dataset Operation?}
-    R -->|Label Dataset| S[datasets/label]
-    R -->|Get Dataset| T[datasets/id]
-    R -->|Delete Dataset| U[datasets/id DELETE]
-    
-    S --> S1[Find Query Result in Session]
-    S1 --> S2[Execute Fresh Query]
-    S2 --> S3[Create Dataset with UUID]
-    S3 --> S4[Save to SessionManager]
-    S4 --> S5[Return Dataset Response]
-    
-    %% Chart Generation Flow
-    F --> V[Get Dataset from SessionManager]
-    V --> W[GraphAgent.generate_chart_config]
-    W --> W1[Analyze Data Types]
-    W1 --> W2[Suggest Chart Type]
-    W2 --> W3[Build Chart.js Config]
-    W3 --> W4[Return Chart Response]
-    
-    %% Conversational Flow
-    G --> X[Get Session & Context Datasets]
-    X --> Y[EnhancedOllamaClient.generate_conversational_response]
-    Y --> Y1[Build Dataset Context]
-    Y1 --> Y2[Build Conversation History]
-    Y2 --> Y3[Generate Contextual Response]
-    Y3 --> Y4[Update Session History]
-    Y4 --> Y5[Return Conversational Response]
-    
-    %% Data Flow Connections
-    I1 -.-> FF
-    M1 -.-> FF
-    K2 -.-> KK
-    K3 -.-> GG
-    K4 -.-> GG
-    K6 -.-> JJ
-    J1 -.-> HH
-    S4 -.-> HH
-    
-    %% Background Processes
-    MM[Session Cleanup Thread] -.-> HH
-    NN[Periodic Cache Updates] -.-> I4
+    %% Chat Interface
+    G --> G1[Build Context]
+    G1 --> G2[Generate Response]
     
     %% Core Components
-    subgraph CoreComponents["Core Components"]
-        AA[SessionManager]
-        BB[SchemaInspector]
-        CC[DatabaseExecutor]
-        DD[GraphAgent]
-        EE[EnhancedOllamaClient]
+    subgraph Core["Core Components"]
+        H1[Session Manager]
+        H2[Schema Inspector]
+        H3[Database Executor]
+        H4[Graph Agent]
+        H5[Enhanced Ollama Client]
     end
     
     %% Data Storage
-    subgraph DataStorage["Data Storage"]
-        FF[(Oracle Database)]
-        GG[ChromaDB Vector Store]
-        HH[In-Memory Sessions]
-        II[CSV Data Files]
+    subgraph Storage["Data Storage"]
+        I1[(Oracle Database)]
+        I2[Vector Store ChromaDB]
+        I3[In-Memory Sessions]
     end
     
     %% External Services
-    subgraph ExternalServices["External Services"]
-        JJ[Ollama API Server]
-        KK[SentenceTransformer Model]
-        LL[Google Translate API]
+    subgraph External["External Services"]
+        J1[Ollama API]
+        J2[SentenceTransformer]
     end
     
-    %% Security & Safety
-    subgraph SecurityFeatures["Security Features"]
-        UU[SQL Injection Prevention]
-        VV[Query Validation]
-        WW[SELECT-only Restriction]
-        XX[Session Timeout]
-    end
-    
-    K7 -.-> UU
-    K7 -.-> VV
-    K7 -.-> WW
-    MM -.-> XX
-
     %% Key Features
-    subgraph KeyFeatures["Key Features"]
-        OO[Multi-language Support]
-        PP[RAG with Vector Search]
-        QQ[Schema-aware SQL Generation]
-        RR[Query Result Caching]
-        SS[Conversational Interface]
-        TT[Chart Generation]
+    subgraph Features["Key Features"]
+        K1[RAG Vector Search]
+        K2[Multi-language Support]
+        K3[SQL Validation]
+        K4[Session Management]
     end
-
-    %% End Node
-    Z([End of Flow])
-    I5 --> Z
-    Q --> Z
-    S5 --> Z
-    W4 --> Z
-    Y5 --> Z
-
+    
+    %% Connect flows to components
+    D2 -.-> H5
+    D5 -.-> H3
+    C1 -.-> H2
+    F2 -.-> H4
+    D1 -.-> H1
+    
+    %% Connect to storage
+    C1 -.-> I1
+    D5 -.-> I1
+    D3 -.-> I2
+    D1 -.-> I3
+    
+    %% Connect to external services
+    D3 -.-> J1
+    D3 -.-> J2
+    
     %% Styling
-    classDef apiEndpoint fill:#cce5ff,stroke:#004085,stroke-width:2px,color:#000
-    classDef coreComponent fill:#e0ccff,stroke:#6f42c1,stroke-width:2px,color:#000
-    classDef dataStore fill:#d4edda,stroke:#155724,stroke-width:2px,color:#000
-    classDef externalService fill:#fff3cd,stroke:#856404,stroke-width:2px,color:#000
-    classDef securityFeature fill:#f8d7da,stroke:#721c24,stroke-width:2px,color:#000
-    classDef endNode fill:#eeeeee,stroke:#212121,stroke-width:2px,color:#000
-
-    class C,D,E,F,G,H apiEndpoint
-    class AA,BB,CC,DD,EE coreComponent
-    class FF,GG,HH,II dataStore
-    class JJ,KK,LL externalService
-    class UU,VV,WW,XX securityFeature
-    class Z endNode
+    classDef endpoint fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef process fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef storage fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef external fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef feature fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    
+    class C,D,E,F,G endpoint
+    class C1,C2,D1,D2,D3,D5,E1,F1,F2,G1 process
+    class I1,I2,I3 storage
+    class J1,J2 external
+    class K1,K2,K3,K4 feature
