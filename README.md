@@ -266,15 +266,17 @@ graph TD
     D3 -.-> J1
     D3 -.-> J2
     
-    %% Styling
-    classDef endpoint fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-    classDef process fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-    classDef storage fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
-    classDef external fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    classDef feature fill:#fce4ec,stroke:#c2185b,stroke-width:2px
-    
+    %% Styling (Black blocks, White text)
+    classDef endpoint fill:#000000,color:#ffffff,stroke:#ffffff,stroke-width:1.5px
+    classDef process fill:#000000,color:#ffffff,stroke:#ffffff,stroke-width:1.5px
+    classDef storage fill:#000000,color:#ffffff,stroke:#ffffff,stroke-width:1.5px
+    classDef external fill:#000000,color:#ffffff,stroke:#ffffff,stroke-width:1.5px
+    classDef feature fill:#000000,color:#ffffff,stroke:#ffffff,stroke-width:1.5px
+    classDef core fill:#000000,color:#ffffff,stroke:#ffffff,stroke-width:1.5px
+
     class C,D,E,F,G endpoint
-    class C1,C2,D1,D2,D3,D5,E1,F1,F2,G1 process
+    class C1,C2,C3,D1,D2,D3,D4,D5,D6,D7,E1,E2,F1,F2,F3,G1,G2 process
+    class H1,H2,H3,H4,H5 core
     class I1,I2,I3 storage
     class J1,J2 external
     class K1,K2,K3,K4 feature
